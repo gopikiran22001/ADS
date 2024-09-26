@@ -3,13 +3,19 @@
 #include<stack>
 #include<vector>
 using namespace std;
-void dfs(vector<vector<int>>&,int);
-void dfs(vector<vector<int>> &);
-void dfs_ip(vector<vector<int>> &,vector<bool> &,int);
-void bfs(vector<vector<int>> &g,int sr)
+class Graph{
+public:
+    vector<vector<int>> g;
+    vector<bool> visited;
+    Graph(int s):g(s+1),visited(s+1,false){}
+    void bfs(int);
+    void dfs();
+    void dfs_ip(int);
+};
+void Graph::bfs(int sr)
 {
-    vector<bool> visited(g.size(),false);
     queue<int> q;
+    fill(visited.begin(), visited.end(), false);
     visited[sr]=true;
     cout<<sr<<" ";
     q.push(sr);
@@ -29,59 +35,18 @@ void bfs(vector<vector<int>> &g,int sr)
     }
     cout<<endl;
 }
-
-int main()
+void Graph::dfs()
 {
-    int n;
-    cout<<"Number of Vertices:";
-    cin>>n;
-    cout<<endl;
-    vector<vector<int>> graph(n+1);
-    int ne,ele;
-    for(int i=1;i<=n;i++)
-    {
-        cout<<"Number of Neighbors for vertex "<<i<<":";
-        cin>>ne;
-        cout<<endl<<"Enter Neighbors for vertex "<<i<<":"<<endl;
-        for(int j=0;j<ne;j++)
-        {
-            cin>>ele;
-            graph[i].push_back(ele);
-        }
-    }
-    cout<<endl;
-    for(int i=1;i<graph.size();i++)
-    {
-        cout<<i<<": ";
-        for(auto j:graph[i])
-        {
-            cout<<j<<" ";
-        }
-        cout<<endl;
-    }
-    int sr;
-    cout<<"Enter Source vertex to start for BFS search:";
-    cin>>sr;
-    cout<<endl;
-    bfs(graph,sr);
-    cout<<"Enter Source vertex to start for DFS search:";
-    cin>>sr;
-    cout<<endl;
-    dfs(graph);
-    return 0;
-}
-void dfs(vector<vector<int>> &g)
-{
-    vector<bool> visited(g.size(),false);
-    for(int i=1;i<visited.size();i++)
+fill(visited.begin(), visited.end(), false);
+ for(int i=1;i<visited.size();i++)
     {
         if(visited[i]==false)
         {
-            visited=dfs_ip(g,visited,i);
+            dfs_ip(i);
         }
     }
 }
-vector<bool> dfs_ip(vector<vector<int>> &g,vector<bool> &visited,int sr)
+void Graph::dfs_ip(int sr)
 {
     stack<int> s;
     visited[sr]=true;
@@ -107,5 +72,45 @@ vector<bool> dfs_ip(vector<vector<int>> &g,vector<bool> &visited,int sr)
         }
     }
     cout<<endl;
-    return visited;
 }
+int main()
+{
+    int n;
+    cout<<"Number of Vertices:";
+    cin>>n;
+    cout<<endl;
+    Graph gr(n);
+    int ne,ele;
+    for(int i=1;i<=n;i++)
+    {
+        cout<<"Number of Neighbors for vertex "<<i<<":";
+        cin>>ne;
+        cout<<endl<<"Enter Neighbors for vertex "<<i<<":"<<endl;
+        for(int j=0;j<ne;j++)
+        {
+            cin>>ele;
+            gr.g[i].push_back(ele);
+        }
+    }
+    cout<<endl;
+    for(int i=1;i<gr.g.size();i++)
+    {
+        cout<<i<<": ";
+        for(auto j:gr.g[i])
+        {
+            cout<<j<<" ";
+        }
+        cout<<endl;
+    }
+    int sr;
+    cout<<"Enter Source vertex to start for BFS search:";
+    cin>>sr;
+    cout<<endl;
+    gr.bfs(sr);
+    cout<<"Enter Source vertex to start for DFS search:";
+    cin>>sr;
+    cout<<endl;
+    gr.dfs();
+    return 0;
+}
+
