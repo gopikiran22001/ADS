@@ -2,60 +2,53 @@
 #include<vector>
 #include<cmath>
 using namespace std;
-vector<int> v(100);
-void merge_imp(int,int,int);
-void merge_sort(int,int);
-void merge_sort(int i,int j)
+void merge_imp(int a[],int i,int j,int mid)
 {
-    if(i<j){
-        int mid=floor((i+j)/2);
-        merge_sort(i,mid);
-        merge_sort(mid+1,j);
-        merge_imp(i,j,mid);
-    }
-}
-void merge_imp(int i,int j,int mid)
-{
-    int n1=mid-i-1;
+    int n1=mid-i+1;
     int n2=j-mid;
-    vector<int> A(n1+1);
-    vector<int> B(n2+1);
-    for(int k=0;i<n1;i++)
+    vector<int> A(n1);
+    vector<int> B(n2);
+    for(int k=0;k<n1;k++)
     {
-        A[k]=v[k+i];
+        A[k]=a[k+i];
     }
     for(int k=0;k<n2;k++)
     {
-        B[k]=v[mid+k];
+        B[k]=a[mid+k+1];
     }
-    A[n1]=2147483647;
-    B[n2]=2147483647;
+    A.push_back(2147483647);
+    B.push_back(2147483647);
     int p=0,q=0;
-    for(int k=i;k<j;k++)
+    for(int k=i;k<=j;k++)
     {
-        if(B[p]>A[p])
+        if(B[q]>A[p])
         {
-            v[k]=A[p];
+            a[k]=A[p];
             p++;
         }
         else{
-            v[k]=B[q];
+            a[k]=B[q];
             q++;
         }
     }
 
 }
+
+void merge_sort(int a[],int i,int j)
+{
+    if(i<j){
+        int mid=floor((i+j)/2);
+        merge_sort(a,i,mid);
+        merge_sort(a,mid+1,j);
+        merge_imp(a,i,j,mid);
+    }
+}
 int main()
 {
-    int q=0;
-    for(int i=10;i>0;i++)
+    int a[]={6,5,4,3,2,1};
+    merge_sort(a,0,5);
+    for(auto i:a)
     {
-        v[q]=i;
-        q++;
-    }
-    merge_sort(0,9);
-    for(int i=0;i<10;i++)
-    {
-        cout<<v[i]<<endl;
+     cout<<i<<endl;
     }
 }
