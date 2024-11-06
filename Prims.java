@@ -15,7 +15,7 @@ class Node implements Comparable<Node> {
 }
 public class Prims {
     public static void prims(int[][] wei, int sr, List<List<Integer>> g, int n) {
-        Map<Integer,Integer> map=new HashMap<>();
+        Set<Integer> map=new HashSet<>();
         Node[] node = new Node[n + 1];
         for (int i = 1; i <= n; i++) {
             node[i] = new Node(i);
@@ -26,13 +26,13 @@ public class Prims {
         while (!q.isEmpty()) {
             Node u = q.poll();
             for (int i : g.get(u.vertex)) {
-                if (!map.containsKey(i) && wei[u.vertex][i] < node[i].key) {
+                if (!map.contains(i) && wei[u.vertex][i] < node[i].key) {
                     node[i].pi = u;
                     node[i].key = wei[u.vertex][i];
                     q.add(node[i]);
                 }
             }
-            map.put(u.vertex,0);
+            map.add(u.vertex);
         }
         int total=0;
         for (Node i : node) {
