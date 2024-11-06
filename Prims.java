@@ -13,7 +13,57 @@ class Node implements Comparable<Node> {
         return Integer.compare(this.key, other.key);
     }
 }
-public class Prims {
+class Node2 {
+    int vertex;
+    Node2 pi;
+    public Node2(int vertex) {
+        this.pi = this;
+        this.vertex = vertex;
+    }
+}
+class Pair implements Comparable<Pair> {
+    int key;
+    Node2 one;
+    Node2 two;
+
+    public Pair(int key, Node2 two, Node2 one) {
+        this.key = key;
+        this.two = two;
+        this.one = one;
+    }
+
+    public int compareTo(Pair other) {
+        return Integer.compare(this.key, other.key);
+    }
+}
+class Prims {
+    public static void merge(Node2 n1,Node2 n2) {
+        n2.pi=n1.pi;
+    }
+    public static boolean find(Node2 n1,Node2 n2) {
+        return n1.pi!=n2.pi;
+    }
+    public static void kruskal(int[][] wei, int sr, List<List<Integer>> g, int n) {
+        PriorityQueue<Pair> q = new PriorityQueue<>();
+        Node2[] node = new Node2[n + 1];
+        for (int i = 1; i <= n; i++) {
+            node[i] = new Node2(i);
+        }
+        for(int i=1;i<g.size();i++) {
+            for (int j : g.get(i)) {
+                q.add(new Pair(wei[i][j], node[i], node[j]));
+            }
+        }
+        int total=0;
+        while (!q.isEmpty()) {
+            Pair u=q.poll();
+            if(find(u.one,u.two)) {
+                total+=u.key;
+                merge(u.one,u.two);
+            }
+        }
+        System.out.println(total);
+    }
     public static void prims(int[][] wei, int sr, List<List<Integer>> g, int n) {
         Set<Integer> map=new HashSet<>();
         Node[] node = new Node[n + 1];
@@ -45,7 +95,7 @@ public class Prims {
             if (i!=null) {
                 if(i.pi!=null)
                     System.out.print((char)(64+c)+":"+(char)(64+i.pi.vertex)+ " ");
-                else    
+                else
                     System.out.print((char)(64+c)+":"+"NULL ");
             }
             c++;
@@ -69,7 +119,7 @@ public class Prims {
         }
         System.out.println("Enter starting vertex, ending vertex & weight and * for to Stop:");
         while (true) {
-            
+
             char s = scanner.next().charAt(0);
             char e = scanner.next().charAt(0);
             int w = scanner.nextInt();
