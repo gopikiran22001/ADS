@@ -4,19 +4,15 @@ class Node implements Comparable<Node> {
     int key;
     int vertex;
     Node pi;
-
     Node(int vertex) {
         this.vertex = vertex;
         this.pi = null;
         this.key = Integer.MAX_VALUE;
     }
-
-    @Override
     public int compareTo(Node other) {
         return Integer.compare(this.key, other.key);
     }
 }
-
 public class Prims {
     public static void prims(int[][] wei, int sr, List<List<Integer>> g, int n) {
         Map<Integer,Integer> map=new HashMap<>();
@@ -44,7 +40,7 @@ public class Prims {
                 total+=i.key;
         }
         int c=0;
-        
+        System.out.println();
         for (Node i : node) {
             if (i!=null) {
                 if(i.pi!=null)
@@ -71,7 +67,7 @@ public class Prims {
         for (int i = 1; i <= n; i++) {
             Arrays.fill(weight[i], -1);
         }
-        System.out.println("Enter starting vertex, ending vertex & weight and * for break");
+        System.out.println("Enter starting vertex, ending vertex & weight and * for to Stop:");
         while (true) {
             
             char s = scanner.next().charAt(0);
@@ -92,9 +88,8 @@ public class Prims {
             }
             System.out.println();
         }
-        System.out.print("Enter Source vertex to start for BFS search: ");
+        System.out.print("Enter Source vertex to start for Minimum Cost: ");
         char sr = scanner.next().charAt(0);
-        System.out.println();
         prims(weight,((int)sr)-64, gr, n);
         scanner.close();
     }
