@@ -15,9 +15,11 @@ class Node implements Comparable<Node> {
 }
 class Node2 {
     int vertex;
+    Node2 set;
     Node2 pi;
     public Node2(int vertex) {
-        this.pi = this;
+        this.set = this;
+        pi=null;
         this.vertex = vertex;
     }
 }
@@ -36,33 +38,62 @@ class Pair implements Comparable<Pair> {
         return Integer.compare(this.key, other.key);
     }
 }
-class Prims {
-    public static void merge(Node2 n1,Node2 n2) {
-        n2.pi=n1.pi;
+public class MST {
+    public static Node2 find(Node2 n) {
+        if (n.set != n) {
+            n.set = find(n.set);  // Path compression
+        }
+        return n.set;
     }
-    public static boolean find(Node2 n1,Node2 n2) {
-        return n1.pi!=n2.pi;
+
+    // Merge the sets containing n1 and n2
+    public static void merge(Node2 n1, Node2 n2) {
+        Node2 root1 = find(n1);
+        Node2 root2 = find(n2);
+        if (root1 != root2) {
+            root2.set = root1;  // Union the sets
+        }
     }
+
     public static void kruskal(int[][] wei, int sr, List<List<Integer>> g, int n) {
         PriorityQueue<Pair> q = new PriorityQueue<>();
         Node2[] node = new Node2[n + 1];
         for (int i = 1; i <= n; i++) {
             node[i] = new Node2(i);
         }
-        for(int i=1;i<g.size();i++) {
+        for(int i=1;i<=n;i++) {
             for (int j : g.get(i)) {
                 q.add(new Pair(wei[i][j], node[i], node[j]));
             }
         }
+        System.out.println("KRUSKAL:");
         int total=0;
         while (!q.isEmpty()) {
             Pair u=q.poll();
-            if(find(u.one,u.two)) {
+            if (find(u.one) != find(u.two)) {
                 total+=u.key;
+                u.two.pi=u.one;
                 merge(u.one,u.two);
             }
         }
-        System.out.println(total);
+        System.out.print("Vertex:");
+        for (Node2 i : node) {
+            if (i!=null) {
+                System.out.print((char)(64+i.vertex)+" ");
+            }
+        }
+        System.out.println();
+        System.out.print("Parent:");
+        for (Node2 i : node) {
+            if (i!=null) {
+                if(i.pi!=null)
+                    System.out.print((char)(64+i.pi.vertex)+" ");
+                else
+                    System.out.print("N ");
+            }
+        }
+        System.out.println();
+        System.out.println("Min Cost: "+total);
     }
     public static void prims(int[][] wei, int sr, List<List<Integer>> g, int n) {
         Set<Integer> map=new HashSet<>();
@@ -85,20 +116,32 @@ class Prims {
             map.add(u.vertex);
         }
         int total=0;
-        for (Node i : node) {
-            if (i != null)
-                total+=i.key;
-        }
-        int c=0;
         System.out.println();
+        System.out.print("Vertex:");
+        for (Node i : node) {
+            if (i!=null) {
+                System.out.print((char)(64+i.vertex)+" ");
+            }
+        }
+        System.out.println();
+        System.out.print("Parent:");
         for (Node i : node) {
             if (i!=null) {
                 if(i.pi!=null)
-                    System.out.print((char)(64+c)+":"+(char)(64+i.pi.vertex)+ " ");
+                    System.out.print((char)(64+i.pi.vertex)+" ");
                 else
-                    System.out.print((char)(64+c)+":"+"NULL ");
+                    System.out.print("N ");
             }
-            c++;
+        }
+        System.out.println();
+        System.out.print("Key:   ");
+        for (Node i : node) {
+            if (i!=null) {
+                if(i.pi!=null){
+                    System.out.print(+i.key+" ");
+                    total+=i.key;
+                }
+            }
         }
         System.out.println();
         System.out.println("Min Cost:"+total);
@@ -141,6 +184,7 @@ class Prims {
         System.out.print("Enter Source vertex to start for Minimum Cost: ");
         char sr = scanner.next().charAt(0);
         prims(weight,((int)sr)-64, gr, n);
+        kruskal(weight,((int)sr)-64, gr, n);
         scanner.close();
     }
 }
