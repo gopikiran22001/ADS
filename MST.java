@@ -13,22 +13,12 @@ class Node implements Comparable<Node> {
         return Integer.compare(this.key, other.key);
     }
 }
-class Node2 {
-    int vertex;
-    Node2 set;
-    Node2 pi;
-    public Node2(int vertex) {
-        this.set = this;
-        pi=null;
-        this.vertex = vertex;
-    }
-}
 class Pair implements Comparable<Pair> {
     int key;
-    Node2 one;
-    Node2 two;
+    Node one;
+    Node two;
 
-    public Pair(int key, Node2 two, Node2 one) {
+    public Pair(int key, Node two, Node one) {
         this.key = key;
         this.two = two;
         this.one = one;
@@ -38,28 +28,33 @@ class Pair implements Comparable<Pair> {
         return Integer.compare(this.key, other.key);
     }
 }
-public class MST {
-    public static Node2 find(Node2 n) {
-        if (n.set != n) {
-            n.set = find(n.set);  // Path compression
+class MST {
+    public static int find(int[] parent,int n) {
+        if (parent[n] != n) {
+            n = find(parent,parent[n]);  // Path compression
         }
-        return n.set;
+        return n;
     }
 
     // Merge the sets containing n1 and n2
-    public static void merge(Node2 n1, Node2 n2) {
-        Node2 root1 = find(n1);
-        Node2 root2 = find(n2);
-        if (root1 != root2) {
-            root2.set = root1;  // Union the sets
+    public static void merge(int[] parent,int n1, int n2) {
+        int root1 = find(parent,n1);
+        int root2 = find(parent,n2);
+        if (root1 == root2) {
+            return;
         }
+        parent[root2]=root1;
     }
 
-    public static void kruskal(int[][] wei, int sr, List<List<Integer>> g, int n) {
+    public static void kruskal(int[][] wei, List<List<Integer>> g, int n,Node[] node) {
         PriorityQueue<Pair> q = new PriorityQueue<>();
-        Node2[] node = new Node2[n + 1];
-        for (int i = 1; i <= n; i++) {
-            node[i] = new Node2(i);
+        for(int i=1;i<=n;i++) {
+            node[i].key=Integer.MAX_VALUE;
+            node[i].pi=null;
+        }
+        int[] parent=new int[n+1];
+        for(int i=1;i<=n;i++) {
+            parent[i] = i;
         }
         for(int i=1;i<=n;i++) {
             for (int j : g.get(i)) {
@@ -70,21 +65,29 @@ public class MST {
         int total=0;
         while (!q.isEmpty()) {
             Pair u=q.poll();
-            if (find(u.one) != find(u.two)) {
+            if (find(parent,u.one.vertex) != find(parent,u.two.vertex)) {
                 total+=u.key;
-                u.two.pi=u.one;
-                merge(u.one,u.two);
+                if(u.one.pi==null && u.two.pi==null) {
+                    u.two.pi=u.one;
+                }
+                else {
+                    if(u.one.pi==null)
+                        u.one.pi=u.two;
+                    else
+                        u.two.pi=u.one;
+                }
+                merge(parent,u.one.vertex,u.two.vertex);
             }
         }
         System.out.print("Vertex:");
-        for (Node2 i : node) {
+        for (Node i : node) {
             if (i!=null) {
                 System.out.print((char)(64+i.vertex)+" ");
             }
         }
         System.out.println();
         System.out.print("Parent:");
-        for (Node2 i : node) {
+        for (Node i : node) {
             if (i!=null) {
                 if(i.pi!=null)
                     System.out.print((char)(64+i.pi.vertex)+" ");
@@ -95,13 +98,13 @@ public class MST {
         System.out.println();
         System.out.println("Min Cost: "+total);
     }
-    public static void prims(int[][] wei, int sr, List<List<Integer>> g, int n) {
+    public static void prims(int[][] wei, int sr, List<List<Integer>> g, int n,Node[] node) {
         Set<Integer> map=new HashSet<>();
-        Node[] node = new Node[n + 1];
-        for (int i = 1; i <= n; i++) {
-            node[i] = new Node(i);
-        }
         PriorityQueue<Node> q = new PriorityQueue<>();
+        for(int i=1;i<=n;i++) {
+            node[i].key=Integer.MAX_VALUE;
+            node[i].pi=null;
+        }
         node[sr].key = 0;
         q.add(node[sr]);
         while (!q.isEmpty()) {
@@ -117,6 +120,7 @@ public class MST {
         }
         int total=0;
         System.out.println();
+        System.out.println("PRIMS:");
         System.out.print("Vertex:");
         for (Node i : node) {
             if (i!=null) {
@@ -137,14 +141,13 @@ public class MST {
         System.out.print("Key:   ");
         for (Node i : node) {
             if (i!=null) {
-                if(i.pi!=null){
-                    System.out.print(+i.key+" ");
+                    System.out.print(i.key+" ");
                     total+=i.key;
-                }
             }
         }
         System.out.println();
         System.out.println("Min Cost:"+total);
+        System.out.println();
     }
 
     public static void main(String[] args) {
@@ -173,6 +176,10 @@ public class MST {
             weight[((int)s)-64][((int)e)-64] = w;
             weight[((int)e)-64][((int)s)-64] = w;
         }
+        Node[] node = new Node[n + 1];
+        for (int i = 1; i <= n; i++) {
+            node[i] = new Node(i);
+        }
         System.out.println();
         for (int i = 1; i < gr.size(); i++) {
             System.out.print((char)(i+64) + ": ");
@@ -183,8 +190,8 @@ public class MST {
         }
         System.out.print("Enter Source vertex to start for Minimum Cost: ");
         char sr = scanner.next().charAt(0);
-        prims(weight,((int)sr)-64, gr, n);
-        kruskal(weight,((int)sr)-64, gr, n);
+        prims(weight,((int)sr)-64, gr, n,node);
+        kruskal(weight,gr, n,node);
         scanner.close();
     }
 }
