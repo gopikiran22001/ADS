@@ -46,7 +46,7 @@ class MST {
         parent[root2]=root1;
     }
 
-    public static void kruskal(int[][] wei, List<List<Integer>> g, int n,Node[] node) {
+    public static void kruskal(List<Pair> wei, List<List<Integer>> g, int n,Node[] node) {
         PriorityQueue<Pair> q = new PriorityQueue<>();
         for(int i=1;i<=n;i++) {
             node[i].key=Integer.MAX_VALUE;
@@ -56,10 +56,8 @@ class MST {
         for(int i=1;i<=n;i++) {
             parent[i] = i;
         }
-        for(int i=1;i<=n;i++) {
-            for (int j : g.get(i)) {
-                q.add(new Pair(wei[i][j], node[i], node[j]));
-            }
+        for(Pair p:wei) {
+            q.add(p);
         }
         System.out.println("KRUSKAL:");
         int total=0;
@@ -141,8 +139,8 @@ class MST {
         System.out.print("Key:   ");
         for (Node i : node) {
             if (i!=null) {
-                    System.out.print(i.key+" ");
-                    total+=i.key;
+                System.out.print(i.key+" ");
+                total+=i.key;
             }
         }
         System.out.println();
@@ -163,6 +161,11 @@ class MST {
         for (int i = 1; i <= n; i++) {
             Arrays.fill(weight[i], -1);
         }
+        Node[] node = new Node[n + 1];
+        for (int i = 1; i <= n; i++) {
+            node[i] = new Node(i);
+        }
+        List<Pair> lp=new ArrayList<>();
         System.out.println("Enter starting vertex, ending vertex & weight and * for to Stop:");
         while (true) {
 
@@ -175,11 +178,9 @@ class MST {
             gr.get(((int)e)-64).add(((int)s)-64);
             weight[((int)s)-64][((int)e)-64] = w;
             weight[((int)e)-64][((int)s)-64] = w;
+            lp.add(new Pair(w,node[((int)s)-64],node[((int)e)-64]));
         }
-        Node[] node = new Node[n + 1];
-        for (int i = 1; i <= n; i++) {
-            node[i] = new Node(i);
-        }
+
         System.out.println();
         for (int i = 1; i < gr.size(); i++) {
             System.out.print((char)(i+64) + ": ");
@@ -191,7 +192,7 @@ class MST {
         System.out.print("Enter Source vertex to start for Minimum Cost: ");
         char sr = scanner.next().charAt(0);
         prims(weight,((int)sr)-64, gr, n,node);
-        kruskal(weight,gr, n,node);
+        kruskal(lp,gr, n,node);
         scanner.close();
     }
 }
