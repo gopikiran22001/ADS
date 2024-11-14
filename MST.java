@@ -61,10 +61,12 @@ class MST {
         }
         System.out.println("KRUSKAL:");
         int total=0;
+        List<Pair> pl=new ArrayList();
         while (!q.isEmpty()) {
             Pair u=q.poll();
             if (find(parent,u.one.vertex) != find(parent,u.two.vertex)) {
                 total+=u.key;
+                pl.add(u);
                 if(u.one.pi==null && u.two.pi==null) {
                     u.two.pi=u.one;
                 }
@@ -77,21 +79,8 @@ class MST {
                 merge(parent,u.one.vertex,u.two.vertex);
             }
         }
-        System.out.print("Vertex:");
-        for (Node i : node) {
-            if (i!=null) {
-                System.out.print((char)(64+i.vertex)+" ");
-            }
-        }
-        System.out.println();
-        System.out.print("Parent:");
-        for (Node i : node) {
-            if (i!=null) {
-                if(i.pi!=null)
-                    System.out.print((char)(64+i.pi.vertex)+" ");
-                else
-                    System.out.print("N ");
-            }
+        for(Pair p:pl) {
+            System.out.println(((char)(64+p.one.vertex))+"  "+((char)(64+p.two.vertex))+": "+p.key);
         }
         System.out.println();
         System.out.println("Min Cost: "+total);
