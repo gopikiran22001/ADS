@@ -19,7 +19,6 @@ class DIJ {
         for(int i=1;i<=n;i++) {
             node[i].key=Integer.MAX_VALUE;
             node[i].pi=null;
-            q.add(node[i]);
         }
         q.remove(node[sr]);
         node[sr].key = 0;
@@ -28,7 +27,7 @@ class DIJ {
             Node u = q.poll();
             for (int i : g.get(u.vertex)) {
                 if (wei[u.vertex][i]+u.key < node[i].key) {
-                    q.remove(node[i]);
+                
                     node[i].pi = u;
                     node[i].key = wei[u.vertex][i]+u.key;
                     q.add(node[i]);
