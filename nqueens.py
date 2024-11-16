@@ -14,10 +14,8 @@ def nqueens(k,n):
             else:
                 nqueens(k+1,n)
         
-x=[]
 co=0
 n=int(input())
-for i in range(n):
-    x.append(0)
+x=[0]*n
 nqueens(0,n-1)
 print(co)
