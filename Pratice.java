@@ -8,6 +8,72 @@ class Pair {
         this.j=j;
     }
 }
+class pro {
+    int A[]=new int[100];
+    int size=0;
+    void maxify(int i) {
+        int l=2*i;
+        int r=2*i+1;
+        int lar=i;
+        if(l<=size && A[l]<A[lar])
+            lar=l;
+        if(r<=size && A[r]<A[lar])
+            lar=r;
+        if(i!=lar) {
+            int t=A[i];
+            A[i]=A[lar];
+            A[lar]=t;
+            maxify(lar);
+        }
+    }
+    void display() {
+        for(int i=1;i<=size;i++) {
+            System.out.printf(A[i]+" ");
+        }
+        System.out.println();
+    }
+    void buildmax() {
+        for(int i=size/2;i>0;i--) {
+            maxify(i);
+        }
+    }
+    void insert(int key) {
+        size+=1;
+        A[size]=key;
+        int i=size;
+        int par=size/2;
+        while (i>1 && A[par]<A[i]) {
+            int t=A[i];
+            A[i]=A[par];
+            A[par]=t;
+            i=par;
+            par=i/2;
+        }
+    }
+    int max() {
+        int ma=A[1];
+        A[1]=A[size];
+        size--;
+        maxify(1);
+        return ma;
+    }
+    int maxi() {
+        return A[1];
+    }
+    void increase(int x,int k) {
+        if(k<A[x])
+            System.out.println("Key Error");
+        A[x]=k;
+        int parent=x/2;
+        while(x > 1 && A[parent]<A[x]){
+            int t=A[x];
+            A[x]=A[parent];
+            A[parent]=t;
+            x=parent;
+            parent=x/2;
+        }
+    }
+}
 class Dis{
     int[] parent,rank;
     Dis(int n) {
@@ -193,12 +259,23 @@ class Scratch {
 //        int nq=4;
 //        int[] x=new int[nq];
 //        nqueens(x,0,nq-1);
-        int[]w={5,7,10,12,15,18,20};
-        int[] x=new int[w.length];
-        int m=35;
-        int s=0;
-        for(int a:w)
-            s+=a;
-        sumsub(x,w,0,s,m,0);
+//        int[]w={5,7,10,12,15,18,20};
+//        int[] x=new int[w.length];
+//        int m=35;
+//        int s=0;
+//        for(int a:w)
+//            s+=a;
+//        sumsub(x,w,0,s,m,0);
+        pro pq=new pro();
+        pq.insert(10);
+        pq.insert(5);
+        pq.insert(12);
+        pq.insert(7);
+        pq.insert(9);
+        pq.display();
+        pq.increase(3,50);
+        pq.display();
+        pq.increase(2,70);
+        pq.display();
     }
 }
