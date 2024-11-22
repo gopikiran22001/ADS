@@ -8,6 +8,17 @@ class Pair {
         this.j=j;
     }
 }
+class OBSTResult {
+    double cost;
+    double weight;
+    int root;
+
+    OBSTResult(double cost, double weight, int root) {
+        this.cost = cost;
+        this.weight = weight;
+        this.root = root;
+    }
+}
 class pro {
     int A[]=new int[100];
     int size=0;
@@ -103,6 +114,49 @@ class Dis{
     }
 }
 class Scratch {
+    public static OBSTResult obst(double[] p, double[] q, int n) {
+        // Initialize tables
+        double[][] w = new double[n + 1][n + 1];
+        double[][] c = new double[n + 1][n + 1];
+        int[][] r = new int[n + 1][n + 1];
+
+        // Initialize the diagonal elements
+        for (int i = 0; i < n; ++i) {
+            w[i][i] = q[i];
+            r[i][i] = 0;
+            c[i][i] = 0;
+            w[i][i + 1] = q[i] + q[i + 1] + p[i];
+            c[i][i + 1] = w[i][i + 1];
+            r[i][i + 1] = i + 1;
+        }
+        w[n][n] = q[n];
+        c[n][n] = 0;
+        r[n][n] = 0;
+
+        // Compute OBST for increasing sizes of subtrees
+        for (int m = 2; m <= n; ++m) { // m = 2 to n
+            for (int i = 0; i <= n - m; ++i) { // i = 0 to n - m
+                int j = i + m;
+                w[i][j] = w[i][j - 1] + p[j - 1] + q[j];
+                double minval = Double.MAX_VALUE;
+                int k = i + 1;
+
+                // Find the minimum cost and corresponding root
+                for (int l = i + 1; l <= j; ++l) {
+                    double cost = c[i][l - 1] + c[l][j];
+                    if (cost < minval) {
+                        minval = cost;
+                        k = l;
+                    }
+                }
+                // Update cost and root for the subtree
+                c[i][j] = w[i][j] + minval;
+                r[i][j] = k;
+            }
+        }
+        // Return final OBST results
+        return new OBSTResult(c[0][n], w[0][n], r[0][n]);
+    }
     static void merg(int[] a,int i,int j,int p) {
         int n1=p-i+1;
         int n2=j-p;
@@ -266,16 +320,23 @@ class Scratch {
 //        for(int a:w)
 //            s+=a;
 //        sumsub(x,w,0,s,m,0);
-        pro pq=new pro();
-        pq.insert(10);
-        pq.insert(5);
-        pq.insert(12);
-        pq.insert(7);
-        pq.insert(9);
-        pq.display();
-        pq.increase(3,50);
-        pq.display();
-        pq.increase(2,70);
-        pq.display();
+//        pro pq=new pro();
+//        pq.insert(10);
+//        pq.insert(5);
+//        pq.insert(12);
+//        pq.insert(7);
+//        pq.insert(9);
+//        pq.display();
+//        pq.increase(3,50);
+//        pq.display();
+//        pq.increase(2,70);
+//        pq.display();
+        double[] p = {0.15, 0.1, 0.05, 0.1, 0.2}; // Example probabilities for keys
+        double[] q = {0.05, 0.1, 0.05, 0.05, 0.05, 0.1}; // Example probabilities for gaps
+        int n = p.length;
+        OBSTResult result = obst(p, q, n);
+        System.out.println("Optimal Cost: " + result.cost);
+        System.out.println("Weight Table (final value): " + result.weight);
+        System.out.println("Root Table (root of the entire tree): " + result.root);
     }
 }
